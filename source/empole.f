@@ -23,6 +23,9 @@ c
 c
 c     choose the method for summing over multipole interactions
 c
+cccccccccccccccccc
+c     we will add some CP stuff to this file
+cccccccccccccccc
       if (use_ewald) then
          if (use_mlist) then
             call empole0d
