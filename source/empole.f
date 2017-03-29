@@ -26,6 +26,7 @@ c
 cccccccccccccccccc
 c     we will add some CP stuff to this file
 c     added some more stuff
+c     added a third line
 cccccccccccccccc
       if (use_ewald) then
          if (use_mlist) then
