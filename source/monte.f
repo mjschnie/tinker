@@ -553,6 +553,10 @@ c
 c
 c     translate the coordinates of each active atom
 c
+c
+c     WE NEED TWO OF THESE
+c     MAKE SAFEGUARD AUTOMATIC IF POLARIZATION IS TURN ON
+c
       nvar = 0
       do i = 1, n
          if (use(i)) then
