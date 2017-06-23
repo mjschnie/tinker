@@ -530,9 +530,11 @@ c
       use inform
       use output
       use usage
+      use potent
       implicit none
       integer i,nvar
       real*8 mcm1,minimum,grdmin
+      real*8 roughmin
       real*8, allocatable :: xx(:)
       character*6 mode,method
       external mcm1,mcm2,optsave
@@ -551,42 +553,85 @@ c     perform dynamic allocation of some local arrays
 c
       allocate (xx(3*n))
 c
+c     check to see if polarization is being used
+c     if so, run rough minimization without polarization
+c     to clean up the structure
+c
+      if (use_polar) then
+         use_polar = .false.
+         roughmin = 10.0d0
+c
 c     translate the coordinates of each active atom
 c
 c
-c     WE NEED TWO OF THESE
-c     MAKE SAFEGUARD AUTOMATIC IF POLARIZATION IS TURN ON
+         nvar = 0
+         do i = 1, n
+            if (use(i)) then
+               nvar = nvar + 1
+               xx(nvar) = x(i)
+               nvar = nvar + 1
+               xx(nvar) = y(i)
+               nvar = nvar + 1
+               xx(nvar) = z(i)
+            end if
+         end do
+c     
+c     make the call to the optimization routine (no polarization)
 c
-      nvar = 0
-      do i = 1, n
-         if (use(i)) then
-            nvar = nvar + 1
-            xx(nvar) = x(i)
-            nvar = nvar + 1
-            xx(nvar) = y(i)
-            nvar = nvar + 1
-            xx(nvar) = z(i)
-         end if
-      end do
+         call tncg (mode,method,nvar,xx,minimum,roughmin,
+     &        mcm1,mcm2,optsave)
 c
-c     make the call to the optimization routine
+c     turn polarization back on and do full minimization
 c
-      call tncg (mode,method,nvar,xx,minimum,grdmin,
-     &                  mcm1,mcm2,optsave)
+         use_polar = .true.
+         call tncg (mode,method,nvar,xx,minimum,grdmin,
+     &        mcm1,mcm2,optsave)
 c
 c     untranslate the final coordinates for active atoms
 c
-      nvar = 0
-      do i = 1, n
-         if (use(i)) then
-            nvar = nvar + 1
-            x(i) = xx(nvar)
-            nvar = nvar + 1
-            y(i) = xx(nvar)
-            nvar = nvar + 1
-            z(i) = xx(nvar)
-         end if
-      end do
+         nvar = 0
+         do i = 1, n
+            if (use(i)) then
+               nvar = nvar + 1
+               x(i) = xx(nvar)
+               nvar = nvar + 1
+               y(i) = xx(nvar)
+               nvar = nvar + 1
+               z(i) = xx(nvar)
+            end if
+         end do
+      else
+         nvar = 0
+         do i = 1, n
+            if (use(i)) then
+               nvar = nvar + 1
+               xx(nvar) = x(i)
+               nvar = nvar + 1
+               xx(nvar) = y(i)
+               nvar = nvar + 1
+               xx(nvar) = z(i)
+            end if
+         end do
+c     
+c     make the call to the optimization routine
+c
+         call tncg (mode,method,nvar,xx,minimum,grdmin,
+     &        mcm1,mcm2,optsave)
+c
+c     untranslate the final coordinates for active atoms
+c
+         nvar = 0
+         do i = 1, n
+            if (use(i)) then
+               nvar = nvar + 1
+               x(i) = xx(nvar)
+               nvar = nvar + 1
+               y(i) = xx(nvar)
+               nvar = nvar + 1
+               z(i) = xx(nvar)
+            end if
+         end do
+      end if
 c
 c     perform deallocation of some local arrays
 c
