@@ -40,8 +40,9 @@ c
          write (iout,20)
    20    format (/,' The TINKER Multipole Editing Utility Can :',
      &           //,4x,'(1) Multipole Parameters from GDMA Output',
-     &           /,4x,'(2) Alter Local Coordinate Frame Definitions',
-     &           /,4x,'(3) Removal of Intramolecular Polarization')
+     &           /,4x,'(2) Multipole Parameters from Horton Ouput',
+     &           /,4x,'(3) Alter Local Coordinate Frame Definitions',
+     &           /,4x,'(4) Removal of Intramolecular Polarization')
          do while (mode.lt.1 .or. mode.gt.3)
             mode = 0
             write (iout,30)
@@ -67,6 +68,18 @@ c
          call fixpolar
          call prtpolar
       else if (mode .eq. 2) then
+         use_mpole = .true.
+         use_polar = .true.
+         call readhorton
+         call initprm
+         call molsetup
+         call setframe
+         call rotframe
+         call setpolar
+         call alterpol
+         call fixpolar
+         call prtpolar
+      else if (mode .eq. 3) then
          call getxyz
          call attach
          call field
@@ -75,7 +88,7 @@ c
          call kpolar
          call fixframe
          call prtpolar
-      else if (mode .eq. 3) then
+      else if (mode .eq. 4) then
          call getxyz
          call attach
          call field

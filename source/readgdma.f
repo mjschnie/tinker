@@ -77,9 +77,9 @@ c     ask for the user specified GDMA output filename
 c
       do while (.not. exist)
          write (iout,10)
- 10          format (/,' Enter GDMA Output File Name :  ',$)
+ 10      format (/,' Enter GDMA Output File Name :  ',$)
          read (input,20)  dmafile
- 20          format (a240)
+ 20      format (a240)
          call basefile (dmafile)
          call suffix (dmafile,'dma','old')
          inquire (file=dmafile,exist=exist)
@@ -96,7 +96,7 @@ c
       rewind (unit=idma)
       do while (.true.)
          read (idma,30,err=50,end=50)  record
- 30          format (a240)
+ 30      format (a240)
          if (i .ne. 0)  call match1 (i,record)
          if (record(12:14) .eq. 'x =') then
             i = i + 1
@@ -106,12 +106,12 @@ c
             read (record(30:39),*)  y(i)
             read (record(45:54),*)  z(i)
             read (idma,40,err=50,end=50)
- 40                format ()
+ 40         format ()
          else if (record(1:16) .eq. 'Total multipoles') then
             goto 50
          end if
       end do
- 50    continue
+ 50   continue
       n = i
 c
 c     perform dynamic allocation of some global arrays
@@ -143,7 +143,7 @@ c
       rewind (unit=idma)
       do while (.true.)
          read (idma,60,err=70,end=70)  record
- 60          format (a240)
+ 60      format (a240)
          if (record(1:27) .eq. 'Positions and radii in bohr') then
             use_bohr = .true.
             goto 70
@@ -167,7 +167,7 @@ c
       rewind (unit=idma)
       do while (.true.)
          read (idma,80,err=100,end=100)  record
- 80          format (a240)
+ 80      format (a240)
          if (record(1:16) .eq. 'Nuclear charges:') then
             k = min(n,20)
             read (record(17:240),*,err=100,end=100)  (atomic(i),i=1,k)
@@ -175,13 +175,13 @@ c
                j = k + 1
                k = min(n,k+20)
                read (idma,90,err=100,end=100)  record
- 90                      format (a240)
+ 90            format (a240)
                read (record,*,err=100,end=100)  (atomic(i),i=j,k)
             end do
             done = .true.
          end if
       end do
- 100   continue
+ 100  continue
       close (unit=idma)
 c
 c     attempt to get atomic numbers from GDMA atom names
@@ -217,7 +217,7 @@ c
                atomic(i) = 53
             else
                read (atmnam,*,err=110,end=110)  atomic(i)
- 110                     continue
+ 110           continue
             end if
          end do
       end if
@@ -225,22 +225,22 @@ c
 c     print the global frame Cartesian atomic multipoles
 c
       write (iout,120)
- 120   format (/,' Global Frame Cartesian Multipole Moments :')
+ 120  format (/,' Global Frame Cartesian Multipole Moments :')
       do i = 1, n
          write (iout,130)  i,name(i),atomic(i)
- 130         format (/,' Site:',i8,9x,'Name:',3x,a3,7x,'Atomic Number:',i8)
+ 130     format (/,' Site:',i8,9x,'Name:',3x,a3,7x,'Atomic Number:',i8)
          write (iout,140)  x(i),y(i),z(i)
- 140         format (/,' Coordinates:',5x,3f15.6)
+ 140     format (/,' Coordinates:',5x,3f15.6)
          write (iout,150)  rpole(1,i)
- 150         format (/,' Charge:',10x,f15.5)
+ 150     format (/,' Charge:',10x,f15.5)
          write (iout,160)  rpole(2,i),rpole(3,i),rpole(4,i)
- 160         format (' Dipole:',10x,3f15.5)
+ 160     format (' Dipole:',10x,3f15.5)
          write (iout,170)  rpole(5,i)
- 170         format (' Quadrupole:',6x,f15.5)
+ 170     format (' Quadrupole:',6x,f15.5)
          write (iout,180)  rpole(8,i),rpole(9,i)
- 180         format (18x,2f15.5)
+ 180     format (18x,2f15.5)
          write (iout,190)  rpole(11,i),rpole(12,i),rpole(13,i)
- 190         format (18x,3f15.5)
+ 190     format (18x,3f15.5)
       end do
 c
 c     convert the dipole and quadrupole moments to Angstroms,
